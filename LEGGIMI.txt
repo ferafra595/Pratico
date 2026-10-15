@@ -1,0 +1,11 @@
+PRATICO — PATCH MIRATA
+
+Sostituire in GitHub nella radice: index.html, app.js, cloud.js, style.css.
+Aggiungere nella radice: account.html, account.js.
+Non modificare wrangler.toml, database D1 o Functions.
+
+Novità: pagina /account.html separata, ADMIN da footer con password, archivio cloud solo Premium, preventivo guidato basato su voci verificate già importate.
+
+IMPORTANTE: i prezzi regionali NON sono stati popolati automaticamente: la ricerca usa solo price_items in D1. Le voci senza prezzo verificato non entrano nel totale. Un prezzario nazionale completo richiede importazione e controllo delle fonti originali.
+
+Le API e Stripe restano quelle esistenti; testare account, Admin, preventivi e D1 in ambiente di prova.
