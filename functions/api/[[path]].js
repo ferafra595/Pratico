@@ -7,7 +7,9 @@ const random=()=>crypto.randomUUID();
 async function passHash(pass,salt=random()){const key=await crypto.subtle.importKey('raw',encoder.encode(pass),'PBKDF2',false,['deriveBits']);const result=await crypto.subtle.deriveBits({name:'PBKDF2',salt:encoder.encode(salt),iterations:210000,hash:'SHA-256'},key,256);return salt+':'+hex(result)}
 async function verify(pass,stored){if(!stored||!stored.includes(':'))return false;const expected=await passHash(pass,stored.split(':')[0]);let x=0;for(let i=0;i<Math.max(expected.length,stored.length);i++)x|=(expected.charCodeAt(i)||0)^(stored.charCodeAt(i)||0);return x===0}
 const cookie=(token,maxAge=604800)=>`pratico_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
-async function current(ctx){const token=(ctx.request.headers.get('cookie')||'').match(/(?:^|;\s*)pratico_session=([^;]+)/)?.[1];if(!token)return null;const hash=await digest(token);return ctx.env.DB.prepare('SELECT u.id,u.email,u.role,u.stripe_customer_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?').bind(hash,Math.floor(Date.now()/1000)).first()}
+async function adminSignature(secret, payload){const key=await crypto.subtle.importKey('raw',encoder.encode(secret),'HMAC',{name:'HMAC',hash:'SHA-256'},false,['sign']);return hex(await crypto.subtle.sign('HMAC',key,encoder.encode(payload)))}
+async function adminFromCookie(ctx){const secret=ctx.env.ADMIN_PASSWORD;if(!secret||secret.length<16)return null;const raw=(ctx.request.headers.get('cookie')||'').match(/(?:^|;\s*)pratico_admin=([^;]+)/)?.[1];if(!raw)return null;const [expires,sig]=raw.split('.');if(!/^\d{10,13}$/.test(expires||'')||Number(expires)<Date.now()||Number(expires)>Date.now()+86400000||!sig)return null;const expected=await adminSignature(secret,expires);if(sig.length!==expected.length)return null;let diff=0;for(let i=0;i<sig.length;i++)diff|=sig.charCodeAt(i)^expected.charCodeAt(i);return diff===0?{id:'admin',email:'Amministratore PRATICO',role:'admin'}:null}
+async function current(ctx){const admin=await adminFromCookie(ctx);if(admin)return admin;const token=(ctx.request.headers.get('cookie')||'').match(/(?:^|;\s*)pratico_session=([^;]+)/)?.[1];if(!token)return null;const hash=await digest(token);return ctx.env.DB.prepare('SELECT u.id,u.email,u.role,u.stripe_customer_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?').bind(hash,Math.floor(Date.now()/1000)).first()}
 async function premium(ctx,user){if(!user)return false;const r=await ctx.env.DB.prepare("SELECT 1 AS ok FROM subscriptions WHERE user_id=? AND status IN ('active','trialing') AND (period_end IS NULL OR period_end>?) LIMIT 1").bind(user.id,Math.floor(Date.now()/1000)).first();return !!r}
 async function body(ctx){const len=Number(ctx.request.headers.get('content-length')||0);if(len>150000)return null;try{const raw=await ctx.request.text();if(raw.length>150000)return null;return JSON.parse(raw)}catch{return null}}
 async function stripe(ctx,route,method='POST',data={}){const b=new URLSearchParams(data);const response=await fetch('https://api.stripe.com/v1/'+route,{method,headers:{authorization:'Bearer '+ctx.env.STRIPE_SECRET_KEY,'content-type':'application/x-www-form-urlencoded'},body:b});const result=await response.json();if(!response.ok)throw Error(result.error?.message||'Stripe error');return result}
@@ -29,6 +31,14 @@ if(path==='stripe/webhook'&&method==='POST'){
 }
 if(method!=='GET'&&!sameOrigin(request))return fail('Origine non autorizzata',403);
 if(path==='config'&&method==='GET')return json({adsenseClient:env.ADSENSE_CLIENT_ID||'',adsenseSlot:env.ADSENSE_SLOT||'',paymentsEnabled:!!(env.STRIPE_SECRET_KEY&&env.STRIPE_PRICE_ID)});
+if(path==='admin/login'&&method==='POST'){
+ const secret=String(env.ADMIN_PASSWORD||'');if(secret.length<16)return fail('Configura ADMIN_PASSWORD (almeno 16 caratteri) nei segreti Cloudflare Pages.',503);
+ const b=await body(ctx),provided=String(b?.password||'');if(provided.length>512)return fail('Credenziali non valide',401);
+ // Constant-time comparison of digests; configure Cloudflare rate limiting on /api/admin/login.
+ const a=await digest(provided),z=await digest(secret);let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^z.charCodeAt(i);if(diff)return fail('Password amministratore non valida',401);
+ const expires=String(Date.now()+8*3600000),signature=await adminSignature(secret,expires);
+ return json({ok:true},200,{'set-cookie':`pratico_admin=${expires}.${signature}; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=28800`});
+}
 if(path==='auth/register'&&method==='POST'){
  const b=await body(ctx);const email=String(b?.email||'').trim().toLowerCase(),password=String(b?.password||'');if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)||password.length<12||password.length>200)return fail('Email valida e password di almeno 12 caratteri richieste');
  const exists=await env.DB.prepare('SELECT id FROM users WHERE email=?').bind(email).first();if(exists)return fail('Account già presente',409);
@@ -41,7 +51,7 @@ if(path==='auth/login'&&method==='POST'){
 const user=await current(ctx);
 if(path==='auth/me'&&method==='GET')return json({user:user?{email:user.email,role:user.role}:null,premium:await premium(ctx,user)});
 if(path==='auth/logout'&&method==='POST'){
- const token=(request.headers.get('cookie')||'').match(/pratico_session=([^;]+)/)?.[1];if(token)await env.DB.prepare('DELETE FROM sessions WHERE token_hash=?').bind(await digest(token)).run();return json({ok:true},200,{'set-cookie':cookie('',0)});
+ const token=(request.headers.get('cookie')||'').match(/pratico_session=([^;]+)/)?.[1];if(token)await env.DB.prepare('DELETE FROM sessions WHERE token_hash=?').bind(await digest(token)).run();return json({ok:true},200,{'set-cookie':user?.role==='admin'?'pratico_admin=; HttpOnly; Secure; SameSite=Strict; Path=/api; Max-Age=0':cookie('',0)});
 }
 if(path==='prices'&&method==='GET'){
  const region=(url.searchParams.get('region')||'').trim(),category=(url.searchParams.get('category')||'').trim(),q=(url.searchParams.get('q')||'').trim();if(!region||region.length>100||category.length>80||q.length>80)return fail('Regione obbligatoria');
