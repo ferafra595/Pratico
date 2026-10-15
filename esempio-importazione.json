@@ -1,0 +1,14 @@
+{
+  "source": {
+    "id": "regione-esempio-2026",
+    "title": "SOSTITUIRE con titolo del prezzario verificato",
+    "url": "https://example.org/official-source",
+    "publisher": "SOSTITUIRE con ente",
+    "edition": "2026",
+    "license": "SOSTITUIRE con condizioni di riutilizzo verificate",
+    "verified_at": "2026-10-15"
+  },
+  "items": [
+    {"region":"Lombardia","category":"edilizia","code":"CODICE-REALE","description":"SOSTITUIRE con descrizione reale","unit":"m2","amount":0}
+  ]
+}

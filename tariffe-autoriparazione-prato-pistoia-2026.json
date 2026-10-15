@@ -1,0 +1,49 @@
+{
+  "source": {
+    "id": "autoriparazione-prato-pistoia-2026",
+    "title": "Osservatorio tariffe autoriparazione 2026 Prato e Pistoia",
+    "url": "https://www.confartigianatoprato.it/wp-content/uploads/Osservatorio-Tariffario-Autoriparazione-2026.pdf",
+    "publisher": "Confartigianato Prato e Pistoia",
+    "edition": "2026",
+    "license": "Consultare condizioni di riutilizzo",
+    "verified_at": "2026-10-15"
+  },
+  "items": [
+    {
+      "region": "Toscana",
+      "province": "Prato e Pistoia",
+      "category": "officine",
+      "code": "OSS-2026-1",
+      "description": "Tariffa oraria indicativa Carrozziere (minimo rilevato)",
+      "unit": "ora",
+      "amount": 52
+    },
+    {
+      "region": "Toscana",
+      "province": "Prato e Pistoia",
+      "category": "officine",
+      "code": "OSS-2026-2",
+      "description": "Tariffa oraria indicativa Meccatronica (minimo rilevato)",
+      "unit": "ora",
+      "amount": 48
+    },
+    {
+      "region": "Toscana",
+      "province": "Prato e Pistoia",
+      "category": "officine",
+      "code": "OSS-2026-3",
+      "description": "Tariffa oraria indicativa Gommista (minimo rilevato)",
+      "unit": "ora",
+      "amount": 47
+    },
+    {
+      "region": "Toscana",
+      "province": "Prato e Pistoia",
+      "category": "officine",
+      "code": "OSS-2026-4",
+      "description": "Tariffa oraria indicativa Motoriparatore (minimo rilevato)",
+      "unit": "ora",
+      "amount": 43
+    }
+  ]
+}

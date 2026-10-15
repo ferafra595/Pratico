@@ -16,7 +16,7 @@ Questa versione contiene il sito con i calcolatori originali, il preventivo guid
 8. Per AdSense (dopo approvazione) imposta `ADSENSE_CLIENT_ID` e `ADSENSE_SLOT`. Prima del rilascio serve una CMP adeguata: l'attuale controllo consenso è solo dimostrativo, **non** una CMP certificata.
 
 ## Esempio importazione prezzi
-Usa `examples/import-example.json` come schema **NON COME PREZZARIO**. Inserisci esclusivamente voci reali, importabili e verificate. L'admin incolla un JSON con `source` (id, title, url HTTPS, publisher, edition, license, verified_at) e `items` (region, category, code, description, unit, amount, province/city facoltative). Max 100 voci per chiamata. Le fonti e l'anno sono mostrati nella ricerca. Per prezzi regionali la regione è obbligatoria e il prezzo non viene adattato automaticamente per città.
+Usa `esempio-importazione.json` come schema **NON COME PREZZARIO**. Inserisci esclusivamente voci reali, importabili e verificate. L'admin incolla un JSON con `source` (id, title, url HTTPS, publisher, edition, license, verified_at) e `items` (region, category, code, description, unit, amount, province/city facoltative). Max 100 voci per chiamata. Le fonti e l'anno sono mostrati nella ricerca. Per prezzi regionali la regione è obbligatoria e il prezzo non viene adattato automaticamente per città.
 
 ## Limitazioni importanti / prima del lancio
 - Password protette con PBKDF2 e cookie HttpOnly Secure SameSite=Lax; **mancano** verifica email, recupero password, protezione antibruteforce distribuita, MFA admin, audit e un sistema di cancellazione dati completo. Prima del lancio pubblico integra Cloudflare Turnstile/rate limiting e un provider di autenticazione gestito o implementa i controlli mancanti.
@@ -31,3 +31,10 @@ Usa `examples/import-example.json` come schema **NON COME PREZZARIO**. Inserisci
 
 ## Test consigliati
 Registrazione, login, logout, sessione scaduta, accesso admin negato a utente normale, query prezzi vuota, import prezzi reali, checkout Stripe test, webhook test, rinnovo e cancellazione, salvataggio Premium, blocco archivio per Free, mobile e stampa PDF.
+
+
+## Archivio prezzi e limiti
+Consultare `GUIDA-PREZZI.md` e `catalogo-fonti.json` per le fonti verificate e i limiti di copertura. Il catalogo non equivale all’importazione integrale dei listini regionali.
+
+## Struttura semplificata
+I file HTML/CSS/JS e i dati di riferimento sono nella radice. Le uniche cartelle sono `functions/api` (obbligatoria per le API Cloudflare Pages) e `migrations` (migrazioni D1). Carica **il contenuto** della cartella nella radice del repository, non la cartella contenitore.

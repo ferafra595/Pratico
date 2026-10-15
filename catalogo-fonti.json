@@ -1,0 +1,47 @@
+[
+  {
+    "id": "lombardia-2026",
+    "title": "Regione Lombardia - Prezzario lavori pubblici 2026",
+    "url": "https://www.regione.lombardia.it/infrastrutture-trasporti-e-mobilita/opere-pubbliche/prezzario-regionale-dei-lavori-pubblici/ser-prezzario-infr",
+    "publisher": "Regione Lombardia",
+    "edition": "2026",
+    "license": "Da verificare prima di redistribuire",
+    "verified_at": "2026-10-15"
+  },
+  {
+    "id": "emiliaromagna-2026",
+    "title": "Emilia-Romagna - Elenco regionale prezzi 2026",
+    "url": "https://territorio.regione.emilia-romagna.it/osservatorio/elenco_regionale_prezzi/prezzario-2026",
+    "publisher": "Regione Emilia-Romagna",
+    "edition": "2026",
+    "license": "Da verificare prima di redistribuire",
+    "verified_at": "2026-10-15"
+  },
+  {
+    "id": "piemonte-2026",
+    "title": "Piemonte - Prezzario 2026",
+    "url": "https://servizi.regione.piemonte.it/catalogo/prezzario-regionale-per-opere-lavori-pubblici",
+    "publisher": "Regione Piemonte",
+    "edition": "2026",
+    "license": "Da verificare prima di redistribuire",
+    "verified_at": "2026-10-15"
+  },
+  {
+    "id": "toscana-2026",
+    "title": "Toscana - Prezzario lavori 2026",
+    "url": "https://dati.toscana.it/dataset/prezzario-lavori-2026",
+    "publisher": "Regione Toscana",
+    "edition": "2026",
+    "license": "Consultare licenza del singolo dataset",
+    "verified_at": "2026-10-15"
+  },
+  {
+    "id": "autoriparazione-prato-pistoia-2026",
+    "title": "Osservatorio tariffe autoriparazione 2026 Prato e Pistoia",
+    "url": "https://www.confartigianatoprato.it/wp-content/uploads/Osservatorio-Tariffario-Autoriparazione-2026.pdf",
+    "publisher": "Confartigianato Prato e Pistoia",
+    "edition": "2026",
+    "license": "Consultare condizioni di riutilizzo",
+    "verified_at": "2026-10-15"
+  }
+]
