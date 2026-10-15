@@ -5,4 +5,4 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "pratico-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "24559b93-27f2-4f77-868d-f3af063e1f31"
