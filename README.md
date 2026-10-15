@@ -1,33 +1,33 @@
-# PRATICO — versione iniziale deployabile su Cloudflare Pages
+# PRATICO — Cloudflare Pages + D1 + Stripe
 
-Sito statico HTML/CSS/JavaScript, senza dipendenze né build.
+## Stato reale
+Questa versione contiene il sito con i calcolatori originali, il preventivo guidato, la ricerca prezzi territoriali **solo su dati verificati importati**, registrazione/login, sessioni HttpOnly, archivio cloud Premium, pannello amministratore base, Stripe Checkout + Billing Portal + webhook firmati, e caricamento AdSense opzionale.
 
-## Pubblicazione GitHub → Cloudflare Pages
-1. Crea un repository GitHub e carica **il contenuto di questa cartella** nella radice del repository (`index.html`, `assets/`, ecc.).
-2. Cloudflare Dashboard → Workers & Pages → Create → Pages → Connect to Git.
-3. Seleziona il repository e configura **Framework preset: None**, **Build command: lascia vuoto**, **Build output directory: /** (radice del repository; se il pannello non accetta `/`, usa `.`).
-4. Deploy. Apri l'indirizzo `*.pages.dev` e prova un calcolatore, un preventivo e la stampa PDF.
+**Non è pronta alla monetizzazione pubblica senza configurazione e verifiche.** Non sono inclusi listini ufficiali precaricati, né è stato collegato un account Stripe/AdSense. Il sistema non scarica autonomamente prezzari regionali: un amministratore deve importarli e mantenerli aggiornati, previa verifica delle licenze. Nessuna stima territoriale viene inventata.
 
-## Cosa funziona
-- Homepage responsive, ricerca e filtro per 6 aree (Privati + 5 categorie professionali).
-- 55+ strumenti specifici, costruiti su formule matematiche riutilizzabili; input modificabili e risultati immediati.
-- Preventivo guidato: voci, quantità, costi, località, trasferta, adeguamento territoriale **manuale**, margine, IVA, acconto e saldo.
-- Stampa/salvataggio PDF tramite la funzione di stampa del browser; esportazione JSON.
-- Archivio locale dei preventivi, importazione/esportazione backup JSON.
-- Nessun account necessario, nessun backend e nessun costo di API.
+## Pubblicazione con GitHub e Cloudflare Pages
+1. Estrai la ZIP e carica **il contenuto della cartella** nella radice del repository GitHub.
+2. Cloudflare Dashboard > Workers & Pages > Create > Pages > Connect to Git. Framework: None, build command vuoto, output `.`.
+3. In Cloudflare > Storage & databases > D1 crea un database `pratico-db`, copia il database ID in `wrangler.toml` e pubblica il commit aggiornato.
+4. Esegui la migrazione nel terminale locale autenticato con Wrangler: `npx wrangler d1 migrations apply pratico-db --remote` (oppure incolla il contenuto di `migrations/0001_init.sql` nella console D1).
+5. Nel progetto Pages > Settings > Bindings verifica che il binding D1 si chiami **DB**. Configura le variabili/segreti nelle impostazioni del progetto e ridistribuisci.
+6. Imposta `ADMIN_EMAIL` all'indirizzo che userai per il primo account admin **prima di registrarlo**. La registrazione con quell'indirizzo conferisce il ruolo admin: mantieni segreta la configurazione, limita l'accesso e non usare un indirizzo condiviso. In produzione è consigliato creare l'admin con una procedura manuale protetta, non tramite registrazione pubblica.
+7. Per Stripe crea un prodotto Premium e un prezzo ricorrente, poi imposta i segreti `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`. Webhook URL: `https://TUO-DOMINIO/api/stripe/webhook`; eventi: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`. Attiva Billing Portal in Stripe. Esegui prove complete in modalità test.
+8. Per AdSense (dopo approvazione) imposta `ADSENSE_CLIENT_ID` e `ADSENSE_SLOT`. Prima del rilascio serve una CMP adeguata: l'attuale controllo consenso è solo dimostrativo, **non** una CMP certificata.
 
-## Limiti da conoscere prima di usare il servizio pubblicamente
-- **Prezzi territoriali automatici non implementati**: la località è registrata, ma il coefficiente è manuale. Non usare dati territoriali inventati. Per implementare listini verificati serviranno importazioni, fonti, licenze e aggiornamenti.
-- **Non è un gestionale fiscale**: l'IVA è impostata dall'utente. Il PDF è un preventivo, non una fattura elettronica.
-- **Premium, pagamenti, autenticazione, cloud, analytics e pubblicità non sono attivi**. Richiedono backend, account e adempimenti specifici. Non ci sono pagamenti fittizi.
-- L'archivio è **solo nel browser corrente**. Cancellare i dati del browser lo elimina. Non è sincronizzato tra dispositivi. Fare backup.
-- Le stime tecniche non sostituiscono progettazione, normativa, verifica di sicurezza o giudizio professionale. Nessun listino ufficiale incorporato.
-- Il numero di calcolatori è elevato, ma alcune voci usano un **motore comune di stima** (per esempio ore × tariffa): non sono preventivi automatici per specifici modelli di auto o impianti.
+## Esempio importazione prezzi
+Usa `examples/import-example.json` come schema **NON COME PREZZARIO**. Inserisci esclusivamente voci reali, importabili e verificate. L'admin incolla un JSON con `source` (id, title, url HTTPS, publisher, edition, license, verified_at) e `items` (region, category, code, description, unit, amount, province/city facoltative). Max 100 voci per chiamata. Le fonti e l'anno sono mostrati nella ricerca. Per prezzi regionali la regione è obbligatoria e il prezzo non viene adattato automaticamente per città.
 
-## Architettura futura proposta
-- Cloudflare Pages Functions + D1 per account e preventivi, R2 per allegati, provider di autenticazione, Stripe Checkout + webhook verificati per Premium, AdSense solo dopo approvazione.
-- Database listini con fonte, area geografica, data, unità di misura e licenza; nessun automatismo di prezzo privo di fonti.
-- Privacy policy, cookie/consensi ove richiesti, termini, gestione dei dati e verifica fiscale prima della monetizzazione.
+## Limitazioni importanti / prima del lancio
+- Password protette con PBKDF2 e cookie HttpOnly Secure SameSite=Lax; **mancano** verifica email, recupero password, protezione antibruteforce distribuita, MFA admin, audit e un sistema di cancellazione dati completo. Prima del lancio pubblico integra Cloudflare Turnstile/rate limiting e un provider di autenticazione gestito o implementa i controlli mancanti.
+- Stripe: verifica webhook HMAC e deduplica eventi; l'ordine degli eventi e la riconciliazione dello stato richiedono test aggiuntivi. I permessi Premium sono applicati sul server.
+- L'archivio cloud salva fino a 100 preventivi visualizzati, ma non supporta modifica in-place. La versione locale funziona indipendentemente.
+- **Non c'è un'importazione automatica dai siti regionali**, non c'è un algoritmo di prezzi territoriali stimati. I prezzari pubblici non equivalgono ai prezzi di mercato privati.
+- Nessuna analytics esterna o dashboard ricavi Stripe integrata; il pannello admin conta utenti, sottoscrizioni, preventivi e voci prezzo.
+- Pubblicità: serve approvazione AdSense, consenso idoneo, privacy/cookie policy e verifica normativa prima dell'attivazione. Non configurare gli ID pubblicitari prima di avere completato gli adempimenti.
+- Il PDF è prodotto tramite stampa browser. Il preventivo non è una fattura elettronica.
+- Calcolatori e IVA sono stime basate sui dati dell'utente, non progettazione tecnica o consulenza fiscale.
+- Nessun file `.env` o segreto deve essere caricato su GitHub.
 
-## Test rapido
-Avvia `python3 -m http.server 8000` nella cartella e visita `http://localhost:8000`. Per le funzioni ES modules non aprire direttamente il file `index.html` tramite `file://`.
+## Test consigliati
+Registrazione, login, logout, sessione scaduta, accesso admin negato a utente normale, query prezzi vuota, import prezzi reali, checkout Stripe test, webhook test, rinnovo e cancellazione, salvataggio Premium, blocco archivio per Free, mobile e stampa PDF.
