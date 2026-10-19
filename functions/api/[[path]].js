@@ -66,10 +66,11 @@ if(path==='admin/prices'&&method==='GET'){
  const r=await env.DB.prepare('SELECT id,region,category,code,description,unit,amount FROM price_items ORDER BY region,category LIMIT 200').all();return json({items:r.results||[]});
 }
 
+if(path==='admin/status'&&method==='GET')return json({configured:!!env.ADMIN_PASSWORD,authenticated:!!await adminFromCookie(ctx)});
 if(path==='config'&&method==='GET')return json({adsenseClient:env.ADSENSE_CLIENT_ID||'',adsenseSlot:env.ADSENSE_SLOT||'',paymentsEnabled:!!(env.STRIPE_SECRET_KEY&&env.STRIPE_PRICE_ID)});
 if(path==='admin/login'&&method==='POST'){
  const secret=String(env.ADMIN_PASSWORD||'');if(!secret)return fail('Configura ADMIN_PASSWORD nei segreti Cloudflare Pages.',503);
- const b=await body(ctx),provided=String(b?.password||'');if(provided.length>512)return fail('Credenziali non valide',401);
+ const b=await body(ctx),provided=String(b?.password||'');if(!provided||provided.length>512)return fail('Credenziali non valide',401);
  // Constant-time comparison of digests; configure Cloudflare rate limiting on /api/admin/login.
  const a=await digest(provided),z=await digest(secret);let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^z.charCodeAt(i);if(diff)return fail('Password amministratore non valida',401);
  const expires=String(Date.now()+8*3600000),signature=await adminSignature(secret,expires);
@@ -102,7 +103,7 @@ if(path==='quotes'&&method==='GET'){
  const r=await env.DB.prepare('SELECT id,payload,created_at,updated_at FROM quotes WHERE user_id=? ORDER BY updated_at DESC LIMIT 100').bind(user.id).all();return json({items:(r.results||[]).map(x=>({...x,payload:JSON.parse(x.payload)}))});
 }
 if(path==='quotes'&&method==='POST'){
- if(!user)return fail('Accesso richiesto',401);if(!await premium(ctx,user))return fail('Premium richiesto',403);const b=await body(ctx);if(!b||!Array.isArray(b.lines)||!b.lines.length||b.lines.length>150||JSON.stringify(b).length>100000||b.lines.some(x=>typeof x.desc!=='string'||x.desc.length>500||!Number.isFinite(Number(x.qty))||Number(x.qty)<0||!Number.isFinite(Number(x.unit))||Number(x.unit)<0))return fail('Preventivo non valido');const id=random();await env.DB.prepare('INSERT INTO quotes(id,user_id,payload) VALUES(?,?,?)').bind(id,user.id,JSON.stringify(b)).run();return json({id},201);
+ if(!user)return fail('Accesso richiesto',401);if(!await premium(ctx,user))return fail('Premium richiesto',403);const b=await body(ctx);if(!b||!Array.isArray(b.lines)||!b.lines.length||b.lines.length>150||JSON.stringify(b).length>100000||b.lines.some(x=>typeof x.desc!=='string'||x.desc.length>500||!Number.isFinite(Number(x.qty))||Number(x.qty)<0||!Number.isFinite(Number(x.unit))||Number(x.unit)<0||!Number.isFinite(Number(x.discount||0))||Number(x.discount||0)<0||!['percent','fixed',undefined].includes(x.discountType)))return fail('Preventivo non valido');const id=random();await env.DB.prepare('INSERT INTO quotes(id,user_id,payload) VALUES(?,?,?)').bind(id,user.id,JSON.stringify(b)).run();return json({id},201);
 }
 if(path.startsWith('quotes/')&&method==='DELETE'){
  if(!user)return fail('Accesso richiesto',401);if(!await premium(ctx,user))return fail('Premium richiesto',403);await env.DB.prepare('DELETE FROM quotes WHERE id=? AND user_id=?').bind(path.slice(7),user.id).run();return json({ok:true});
