@@ -1,12 +1,17 @@
-PRATICO — PATCH STIME INDICATIVE
+PRATICO — PATCH EVOLUTIVA (NON VERSIONE DEFINITIVA CERTIFICATA)
 
-Sostituisci nel repository GitHub SOLO questi 3 file nella radice:
-- index.html
-- cloud.js
-- stime-indicative.json (nuovo)
+Carica i file di questa ZIP nel repository mantenendo i percorsi. NON sovrascrivere wrangler.toml.
 
-Non cambiare wrangler.toml, database D1, functions, account, app.js o altri file.
+IMPORTANTE: esegui una volta la migrazione migrations/0002_settings.sql in Cloudflare D1 → pratico-db → Console, prima del deploy.
 
-IMPORTANTE: prezzi NON verificati, intervalli illustrativi da affinare con dati reali. Non sono prezzi territoriali. La regione è memorizzata ma non altera i prezzi. Il preventivo guidato trasferisce il valore centrale dell’intervallo nel preventivo modificabile. Verificare IVA e lavorazioni escluse.
+Cosa include:
+- percorso Privato/Azienda più coerente
+- validazione degli input di base nei calcolatori
+- preventivo guidato con ricette multi-lavorazione e intervalli illustrativi
+- coefficienti regionali SPERIMENTALI modificabili in ADMIN, inizialmente tutti a 1
+- ADMIN con statistiche, liste utenti/preventivi/prezzi, impostazioni e pubblicità (solo placeholder)
+- password ADMIN senza minimo arbitrario, conservata nei Secret Cloudflare
 
-Per interventi compositi il motore riconosce solo lavorazioni esplicitamente nominate: non è un sistema AI generativo né un computo tecnico completo.
+Cosa NON è completo: test sistematici di tutti i calcolatori; copertura di ogni intervento; prezzi territoriali verificati; vero sistema di monetizzazione AdSense e consenso; gestione CRUD completa di ogni modulo. Non attivare pagamenti o pubblicità prima dei test e degli adempimenti.
+
+Sicurezza: password ADMIN breve tecnicamente accettata ma sconsigliata; proteggere /api/admin/login con rate limiting Cloudflare.
