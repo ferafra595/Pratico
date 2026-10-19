@@ -1,0 +1,534 @@
+[
+  {
+    "id": "ST001",
+    "category": "finiture",
+    "name": "Tinteggiatura pareti interne",
+    "keywords": [
+      "tinteggiare",
+      "imbiancare",
+      "pittura",
+      "verniciare",
+      "tinteggiatura"
+    ],
+    "unit": "m²",
+    "min": 8.0,
+    "max": 20.0
+  },
+  {
+    "id": "ST002",
+    "category": "finiture",
+    "name": "Rasatura pareti",
+    "keywords": [
+      "rasare",
+      "rasatura",
+      "stuccatura"
+    ],
+    "unit": "m²",
+    "min": 9.0,
+    "max": 22.0
+  },
+  {
+    "id": "ST003",
+    "category": "finiture",
+    "name": "Intonaco interno",
+    "keywords": [
+      "intonaco",
+      "intonacare"
+    ],
+    "unit": "m²",
+    "min": 18.0,
+    "max": 38.0
+  },
+  {
+    "id": "ST004",
+    "category": "finiture",
+    "name": "Posa pavimento ceramico (solo posa)",
+    "keywords": [
+      "posa pavimento",
+      "piastrellare",
+      "pavimentazione"
+    ],
+    "unit": "m²",
+    "min": 22.0,
+    "max": 48.0
+  },
+  {
+    "id": "ST005",
+    "category": "finiture",
+    "name": "Fornitura e posa piastrelle standard",
+    "keywords": [
+      "piastrelle",
+      "gres",
+      "pavimento nuovo"
+    ],
+    "unit": "m²",
+    "min": 40.0,
+    "max": 95.0
+  },
+  {
+    "id": "ST006",
+    "category": "finiture",
+    "name": "Controsoffitto in cartongesso",
+    "keywords": [
+      "controsoffitto",
+      "cartongesso soffitto"
+    ],
+    "unit": "m²",
+    "min": 35.0,
+    "max": 75.0
+  },
+  {
+    "id": "ST007",
+    "category": "finiture",
+    "name": "Parete divisoria cartongesso",
+    "keywords": [
+      "parete cartongesso",
+      "parete divisoria"
+    ],
+    "unit": "m²",
+    "min": 45.0,
+    "max": 95.0
+  },
+  {
+    "id": "ST008",
+    "category": "finiture",
+    "name": "Posa battiscopa",
+    "keywords": [
+      "battiscopa"
+    ],
+    "unit": "m",
+    "min": 7.0,
+    "max": 18.0
+  },
+  {
+    "id": "ST009",
+    "category": "edilizia",
+    "name": "Demolizione rivestimenti interni",
+    "keywords": [
+      "demolire piastrelle",
+      "demolizione rivestimenti"
+    ],
+    "unit": "m²",
+    "min": 14.0,
+    "max": 36.0
+  },
+  {
+    "id": "ST010",
+    "category": "edilizia",
+    "name": "Demolizione tramezzo non strutturale",
+    "keywords": [
+      "demolire muro",
+      "demolizione tramezzo"
+    ],
+    "unit": "m²",
+    "min": 30.0,
+    "max": 75.0
+  },
+  {
+    "id": "ST011",
+    "category": "edilizia",
+    "name": "Realizzazione tramezzo laterizio",
+    "keywords": [
+      "tramezzo",
+      "muratura",
+      "parete mattoni"
+    ],
+    "unit": "m²",
+    "min": 48.0,
+    "max": 105.0
+  },
+  {
+    "id": "ST012",
+    "category": "edilizia",
+    "name": "Massetto tradizionale",
+    "keywords": [
+      "massetto"
+    ],
+    "unit": "m²",
+    "min": 20.0,
+    "max": 45.0
+  },
+  {
+    "id": "ST013",
+    "category": "edilizia",
+    "name": "Getto calcestruzzo non strutturale",
+    "keywords": [
+      "calcestruzzo",
+      "getto cemento"
+    ],
+    "unit": "m³",
+    "min": 170.0,
+    "max": 330.0
+  },
+  {
+    "id": "ST014",
+    "category": "edilizia",
+    "name": "Scavo semplice in terreno ordinario",
+    "keywords": [
+      "scavo",
+      "scavare"
+    ],
+    "unit": "m³",
+    "min": 18.0,
+    "max": 55.0
+  },
+  {
+    "id": "ST015",
+    "category": "edilizia",
+    "name": "Smaltimento macerie (stima)",
+    "keywords": [
+      "smaltimento macerie",
+      "smaltire macerie"
+    ],
+    "unit": "m³",
+    "min": 65.0,
+    "max": 160.0
+  },
+  {
+    "id": "ST016",
+    "category": "edilizia",
+    "name": "Rifacimento bagno base (insieme lavori)",
+    "keywords": [
+      "rifare bagno",
+      "ristrutturare bagno",
+      "ristrutturazione bagno"
+    ],
+    "unit": "m²",
+    "min": 650.0,
+    "max": 1450.0
+  },
+  {
+    "id": "ST017",
+    "category": "edilizia",
+    "name": "Ristrutturazione interna leggera",
+    "keywords": [
+      "ristrutturare casa",
+      "ristrutturazione casa"
+    ],
+    "unit": "m²",
+    "min": 250.0,
+    "max": 650.0
+  },
+  {
+    "id": "ST018",
+    "category": "impianti",
+    "name": "Punto luce o presa standard",
+    "keywords": [
+      "punto luce",
+      "presa elettrica",
+      "punti elettrici"
+    ],
+    "unit": "cad",
+    "min": 45.0,
+    "max": 115.0
+  },
+  {
+    "id": "ST019",
+    "category": "impianti",
+    "name": "Sostituzione interruttore o presa",
+    "keywords": [
+      "cambiare presa",
+      "sostituire presa",
+      "interruttore"
+    ],
+    "unit": "cad",
+    "min": 35.0,
+    "max": 85.0
+  },
+  {
+    "id": "ST020",
+    "category": "impianti",
+    "name": "Installazione lampadario semplice",
+    "keywords": [
+      "lampadario",
+      "plafoniera"
+    ],
+    "unit": "cad",
+    "min": 45.0,
+    "max": 115.0
+  },
+  {
+    "id": "ST021",
+    "category": "impianti",
+    "name": "Quadro elettrico piccolo (stima)",
+    "keywords": [
+      "quadro elettrico"
+    ],
+    "unit": "cad",
+    "min": 280.0,
+    "max": 750.0
+  },
+  {
+    "id": "ST022",
+    "category": "impianti",
+    "name": "Impianto elettrico appartamento standard",
+    "keywords": [
+      "rifare impianto elettrico",
+      "impianto elettrico completo"
+    ],
+    "unit": "m²",
+    "min": 45.0,
+    "max": 105.0
+  },
+  {
+    "id": "ST023",
+    "category": "impianti",
+    "name": "Intervento idraulico semplice",
+    "keywords": [
+      "riparazione idraulica",
+      "perdita acqua",
+      "rubinetto"
+    ],
+    "unit": "cad",
+    "min": 75.0,
+    "max": 190.0
+  },
+  {
+    "id": "ST024",
+    "category": "impianti",
+    "name": "Sostituzione miscelatore (esclusa fornitura)",
+    "keywords": [
+      "miscelatore",
+      "cambiare rubinetto"
+    ],
+    "unit": "cad",
+    "min": 55.0,
+    "max": 140.0
+  },
+  {
+    "id": "ST025",
+    "category": "impianti",
+    "name": "Installazione lavabo (solo posa)",
+    "keywords": [
+      "installare lavabo",
+      "lavabo"
+    ],
+    "unit": "cad",
+    "min": 100.0,
+    "max": 250.0
+  },
+  {
+    "id": "ST026",
+    "category": "impianti",
+    "name": "Installazione wc (solo posa)",
+    "keywords": [
+      "installare wc",
+      "sanitario",
+      "wc"
+    ],
+    "unit": "cad",
+    "min": 110.0,
+    "max": 260.0
+  },
+  {
+    "id": "ST027",
+    "category": "impianti",
+    "name": "Impianto idraulico bagno standard",
+    "keywords": [
+      "rifare impianto idraulico",
+      "impianto idraulico bagno"
+    ],
+    "unit": "cad",
+    "min": 950.0,
+    "max": 2600.0
+  },
+  {
+    "id": "ST028",
+    "category": "impianti",
+    "name": "Posa tubazione semplice",
+    "keywords": [
+      "tubazione",
+      "tubi acqua"
+    ],
+    "unit": "m",
+    "min": 16.0,
+    "max": 45.0
+  },
+  {
+    "id": "ST029",
+    "category": "officine",
+    "name": "Manodopera officina generica",
+    "keywords": [
+      "manodopera officina",
+      "meccanico",
+      "diagnosi"
+    ],
+    "unit": "h",
+    "min": 35.0,
+    "max": 75.0
+  },
+  {
+    "id": "ST030",
+    "category": "officine",
+    "name": "Tagliando auto ordinario",
+    "keywords": [
+      "tagliando",
+      "olio e filtri"
+    ],
+    "unit": "cad",
+    "min": 130.0,
+    "max": 350.0
+  },
+  {
+    "id": "ST031",
+    "category": "officine",
+    "name": "Sostituzione pastiglie freno asse",
+    "keywords": [
+      "pastiglie freni",
+      "pastiglie"
+    ],
+    "unit": "cad",
+    "min": 90.0,
+    "max": 220.0
+  },
+  {
+    "id": "ST032",
+    "category": "officine",
+    "name": "Dischi e pastiglie freno asse",
+    "keywords": [
+      "dischi freno",
+      "freni completi"
+    ],
+    "unit": "cad",
+    "min": 210.0,
+    "max": 490.0
+  },
+  {
+    "id": "ST033",
+    "category": "officine",
+    "name": "Cambio batteria auto standard",
+    "keywords": [
+      "batteria auto",
+      "cambiare batteria"
+    ],
+    "unit": "cad",
+    "min": 110.0,
+    "max": 270.0
+  },
+  {
+    "id": "ST034",
+    "category": "officine",
+    "name": "Ricarica climatizzatore auto",
+    "keywords": [
+      "ricarica clima",
+      "climatizzatore auto"
+    ],
+    "unit": "cad",
+    "min": 70.0,
+    "max": 170.0
+  },
+  {
+    "id": "ST035",
+    "category": "officine",
+    "name": "Diagnosi elettronica base",
+    "keywords": [
+      "diagnosi auto",
+      "spia motore"
+    ],
+    "unit": "cad",
+    "min": 35.0,
+    "max": 95.0
+  },
+  {
+    "id": "ST036",
+    "category": "officine",
+    "name": "Sostituzione pneumatici (solo montaggio, 4 ruote)",
+    "keywords": [
+      "montare gomme",
+      "montaggio pneumatici"
+    ],
+    "unit": "cad",
+    "min": 45.0,
+    "max": 110.0
+  },
+  {
+    "id": "ST037",
+    "category": "freelance",
+    "name": "Sito web vetrina base",
+    "keywords": [
+      "sito web",
+      "sito internet",
+      "sito vetrina"
+    ],
+    "unit": "cad",
+    "min": 550.0,
+    "max": 1900.0
+  },
+  {
+    "id": "ST038",
+    "category": "freelance",
+    "name": "E-commerce base",
+    "keywords": [
+      "ecommerce",
+      "e-commerce",
+      "negozio online"
+    ],
+    "unit": "cad",
+    "min": 1300.0,
+    "max": 4500.0
+  },
+  {
+    "id": "ST039",
+    "category": "freelance",
+    "name": "Gestione social mensile base",
+    "keywords": [
+      "gestione social",
+      "social media"
+    ],
+    "unit": "cad",
+    "min": 250.0,
+    "max": 850.0
+  },
+  {
+    "id": "ST040",
+    "category": "freelance",
+    "name": "Video breve per social",
+    "keywords": [
+      "reel",
+      "video social",
+      "videomaking"
+    ],
+    "unit": "cad",
+    "min": 90.0,
+    "max": 350.0
+  },
+  {
+    "id": "ST041",
+    "category": "freelance",
+    "name": "Logo e identità visiva base",
+    "keywords": [
+      "logo",
+      "brand identity",
+      "branding"
+    ],
+    "unit": "cad",
+    "min": 180.0,
+    "max": 900.0
+  },
+  {
+    "id": "ST042",
+    "category": "freelance",
+    "name": "Gestione campagne ads (mensile, budget escluso)",
+    "keywords": [
+      "campagne ads",
+      "meta ads",
+      "google ads",
+      "pubblicità online"
+    ],
+    "unit": "cad",
+    "min": 180.0,
+    "max": 700.0
+  },
+  {
+    "id": "ST043",
+    "category": "freelance",
+    "name": "Consulenza digitale oraria",
+    "keywords": [
+      "consulenza",
+      "consulente"
+    ],
+    "unit": "h",
+    "min": 35.0,
+    "max": 120.0
+  }
+]

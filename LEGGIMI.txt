@@ -1,11 +1,12 @@
-PRATICO — PATCH MIRATA
+PRATICO — PATCH STIME INDICATIVE
 
-Sostituire in GitHub nella radice: index.html, app.js, cloud.js, style.css.
-Aggiungere nella radice: account.html, account.js.
-Non modificare wrangler.toml, database D1 o Functions.
+Sostituisci nel repository GitHub SOLO questi 3 file nella radice:
+- index.html
+- cloud.js
+- stime-indicative.json (nuovo)
 
-Novità: pagina /account.html separata, ADMIN da footer con password, archivio cloud solo Premium, preventivo guidato basato su voci verificate già importate.
+Non cambiare wrangler.toml, database D1, functions, account, app.js o altri file.
 
-IMPORTANTE: i prezzi regionali NON sono stati popolati automaticamente: la ricerca usa solo price_items in D1. Le voci senza prezzo verificato non entrano nel totale. Un prezzario nazionale completo richiede importazione e controllo delle fonti originali.
+IMPORTANTE: prezzi NON verificati, intervalli illustrativi da affinare con dati reali. Non sono prezzi territoriali. La regione è memorizzata ma non altera i prezzi. Il preventivo guidato trasferisce il valore centrale dell’intervallo nel preventivo modificabile. Verificare IVA e lavorazioni escluse.
 
-Le API e Stripe restano quelle esistenti; testare account, Admin, preventivi e D1 in ambiente di prova.
+Per interventi compositi il motore riconosce solo lavorazioni esplicitamente nominate: non è un sistema AI generativo né un computo tecnico completo.
