@@ -1,9 +1,7 @@
-PRATICO HOME 4.0 — installazione
+PRATICO 5.0 — PREVENTIVO RAPIDO
 
-Sostituisci soltanto index.html, app.js e style.css nella radice del repository.
-Nessuna migrazione D1. Login, ADMIN, cloud e backend non modificati.
+Sostituisci nella root GitHub i file index.html, app.js e style.css. Nessuna migrazione D1.
 
-Funzioni: home nuova, scelta privato/azienda, 6 settori (incluso tutti), filtro calcolatori, ricerca rapida, memorizzazione preferenze e collegamenti.
+Il nuovo preventivo rapido usa lo stesso motore di calcolo precedente: IVA, margine, sconti e supplementi impostati nella sezione avanzata si applicano anche al totale rapido. Verificare la fiscalità prima di emettere offerte.
 
-Test consigliati: primo accesso, privato, ciascuno dei cinque settori, tutti i settori, ricerca con parola presente/assente, cambio profilo, mobile, preventivo, ADMIN.
-Nota: la ricerca dalla home seleziona automaticamente un percorso coerente con i risultati; per parole presenti in diversi settori mostra l’insieme dei risultati professionali oppure privati secondo il percorso salvato.
+Per aggiungere una lavorazione basta scrivere nome, quantità e prezzo unitario; puoi continuare senza passare per i calcolatori. Le righe sono modificabili e rimovibili; stampa/PDF disponibile. Le funzioni cloud Premium restano nella sezione avanzata. Prezzi automatici territoriali non introdotti.
