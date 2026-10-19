@@ -6,3 +6,6 @@
 
 /* Account indipendente e riepilogo guidato */
 .account-main{max-width:1050px;margin:0 auto;min-height:70vh;padding:35px 18px}.account-main .section{padding:40px 0}.account-main .panel{margin-top:18px}.guided .form-grid label:first-child{grid-column:1/-1}.guided textarea{margin-top:8px}.estimate-warning{border-left:3px solid #db8a31;background:#fff8ed;padding:12px;border-radius:8px;font-size:13px}.estimate-summary{padding:17px;background:#edf4ff;border-radius:12px;margin:18px 0;font-weight:700}.guided h4{margin:20px 0 8px}.guided select{margin-top:8px}.guided label{display:block;font-size:13px;font-weight:650}.account-main .section-head{margin-bottom:25px}
+
+/* PRATICO 2.1 – righe di preventivo e accessibilità responsive */
+.line{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.line .desc{flex:2 1 190px;min-width:150px}.line .qty,.line .unit,.line .discount{flex:1 1 85px;min-width:75px}.line .discount-type{flex:1 1 105px;min-width:100px}.line>button{flex:0 0 38px}.line input,.line select{max-width:100%}@media(max-width:620px){.line{border:1px solid #dde4ee;padding:12px;border-radius:12px;margin-bottom:12px}.line .desc{flex-basis:100%}}
