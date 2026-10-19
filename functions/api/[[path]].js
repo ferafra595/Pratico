@@ -8,7 +8,7 @@ async function passHash(pass,salt=random()){const key=await crypto.subtle.import
 async function verify(pass,stored){if(!stored||!stored.includes(':'))return false;const expected=await passHash(pass,stored.split(':')[0]);let x=0;for(let i=0;i<Math.max(expected.length,stored.length);i++)x|=(expected.charCodeAt(i)||0)^(stored.charCodeAt(i)||0);return x===0}
 const cookie=(token,maxAge=604800)=>`pratico_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
 async function adminSignature(secret, payload){const key=await crypto.subtle.importKey('raw',encoder.encode(secret),'HMAC',{name:'HMAC',hash:'SHA-256'},false,['sign']);return hex(await crypto.subtle.sign('HMAC',key,encoder.encode(payload)))}
-async function adminFromCookie(ctx){const secret=ctx.env.ADMIN_PASSWORD;if(!secret||secret.length<16)return null;const raw=(ctx.request.headers.get('cookie')||'').match(/(?:^|;\s*)pratico_admin=([^;]+)/)?.[1];if(!raw)return null;const [expires,sig]=raw.split('.');if(!/^\d{10,13}$/.test(expires||'')||Number(expires)<Date.now()||Number(expires)>Date.now()+86400000||!sig)return null;const expected=await adminSignature(secret,expires);if(sig.length!==expected.length)return null;let diff=0;for(let i=0;i<sig.length;i++)diff|=sig.charCodeAt(i)^expected.charCodeAt(i);return diff===0?{id:'admin',email:'Amministratore PRATICO',role:'admin'}:null}
+async function adminFromCookie(ctx){const secret=ctx.env.ADMIN_PASSWORD;if(!secret)return null;const raw=(ctx.request.headers.get('cookie')||'').match(/(?:^|;\s*)pratico_admin=([^;]+)/)?.[1];if(!raw)return null;const [expires,sig]=raw.split('.');if(!/^\d{10,13}$/.test(expires||'')||Number(expires)<Date.now()||Number(expires)>Date.now()+86400000||!sig)return null;const expected=await adminSignature(secret,expires);if(sig.length!==expected.length)return null;let diff=0;for(let i=0;i<sig.length;i++)diff|=sig.charCodeAt(i)^expected.charCodeAt(i);return diff===0?{id:'admin',email:'Amministratore PRATICO',role:'admin'}:null}
 async function current(ctx){const admin=await adminFromCookie(ctx);if(admin)return admin;const token=(ctx.request.headers.get('cookie')||'').match(/(?:^|;\s*)pratico_session=([^;]+)/)?.[1];if(!token)return null;const hash=await digest(token);return ctx.env.DB.prepare('SELECT u.id,u.email,u.role,u.stripe_customer_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?').bind(hash,Math.floor(Date.now()/1000)).first()}
 async function premium(ctx,user){if(!user)return false;const r=await ctx.env.DB.prepare("SELECT 1 AS ok FROM subscriptions WHERE user_id=? AND status IN ('active','trialing') AND (period_end IS NULL OR period_end>?) LIMIT 1").bind(user.id,Math.floor(Date.now()/1000)).first();return !!r}
 async function body(ctx){const len=Number(ctx.request.headers.get('content-length')||0);if(len>150000)return null;try{const raw=await ctx.request.text();if(raw.length>150000)return null;return JSON.parse(raw)}catch{return null}}
@@ -30,9 +30,45 @@ if(path==='stripe/webhook'&&method==='POST'){
  await env.DB.prepare('INSERT INTO webhook_events(id) VALUES(?)').bind(event.id).run();return json({ok:true});
 }
 if(method!=='GET'&&!sameOrigin(request))return fail('Origine non autorizzata',403);
+
+if(path==='site/config'&&method==='GET'){
+ const r=await env.DB.prepare('SELECT key,value FROM site_settings WHERE key IN ('ads_enabled','ads_placement','ads_html','regional_factors','estimator_notice')').all();
+ const values=Object.fromEntries((r.results||[]).map(x=>[x.key,x.value]));
+ return json({adsEnabled:values.ads_enabled==='true',adsPlacement:values.ads_placement||'inline',adsHtml:values.ads_html||'',regionalFactors:JSON.parse(values.regional_factors||'{}'),estimatorNotice:values.estimator_notice||''});
+}
+if(path==='admin/settings'&&method==='GET'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const r=await env.DB.prepare('SELECT key,value FROM site_settings ORDER BY key').all();return json({items:r.results||[]});
+}
+if(path==='admin/settings'&&method==='POST'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const b=await body(ctx);const allowed=['ads_enabled','ads_placement','ads_html','regional_factors','estimator_notice'];
+ if(!b||!allowed.includes(b.key)||typeof b.value!=='string'||b.value.length>12000)return fail('Impostazione non valida');
+ if(b.key==='ads_enabled'&&!['true','false'].includes(b.value))return fail('Valore non valido');
+ if(b.key==='ads_placement'&&!['inline','popup','both','off'].includes(b.value))return fail('Posizione non valida');
+ if(b.key==='regional_factors'){
+  let f;try{f=JSON.parse(b.value)}catch{return fail('JSON non valido')}
+  if(!f||typeof f!=='object'||Array.isArray(f)||Object.keys(f).length>25||Object.values(f).some(x=>typeof x!=='number'||x<0.5||x>2))return fail('Coefficienti ammessi tra 0,5 e 2');
+ }
+ if(b.key==='ads_html'&&b.value.trim())return fail('Per sicurezza non è consentito salvare HTML pubblicitario arbitrario: configura gli ID AdSense come segreti e usa gli slot predefiniti.');
+ await env.DB.prepare('INSERT INTO site_settings(key,value,updated_at) VALUES(?,?,CURRENT_TIMESTAMP) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP').bind(b.key,b.value).run();return json({ok:true});
+}
+if(path==='admin/users'&&method==='GET'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const r=await env.DB.prepare('SELECT u.id,u.email,u.role,u.created_at,MAX(s.status) subscription_status FROM users u LEFT JOIN subscriptions s ON s.user_id=u.id GROUP BY u.id ORDER BY u.created_at DESC LIMIT 200').all();return json({items:r.results||[]});
+}
+if(path==='admin/quotes'&&method==='GET'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const r=await env.DB.prepare('SELECT q.id,u.email,q.created_at,q.updated_at FROM quotes q JOIN users u ON u.id=q.user_id ORDER BY q.updated_at DESC LIMIT 200').all();return json({items:r.results||[]});
+}
+if(path==='admin/prices'&&method==='GET'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const r=await env.DB.prepare('SELECT id,region,category,code,description,unit,amount FROM price_items ORDER BY region,category LIMIT 200').all();return json({items:r.results||[]});
+}
+
 if(path==='config'&&method==='GET')return json({adsenseClient:env.ADSENSE_CLIENT_ID||'',adsenseSlot:env.ADSENSE_SLOT||'',paymentsEnabled:!!(env.STRIPE_SECRET_KEY&&env.STRIPE_PRICE_ID)});
 if(path==='admin/login'&&method==='POST'){
- const secret=String(env.ADMIN_PASSWORD||'');if(secret.length<16)return fail('Configura ADMIN_PASSWORD (almeno 16 caratteri) nei segreti Cloudflare Pages.',503);
+ const secret=String(env.ADMIN_PASSWORD||'');if(!secret)return fail('Configura ADMIN_PASSWORD nei segreti Cloudflare Pages.',503);
  const b=await body(ctx),provided=String(b?.password||'');if(provided.length>512)return fail('Credenziali non valide',401);
  // Constant-time comparison of digests; configure Cloudflare rate limiting on /api/admin/login.
  const a=await digest(provided),z=await digest(secret);let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^z.charCodeAt(i);if(diff)return fail('Password amministratore non valida',401);
@@ -74,11 +110,11 @@ if(path==='billing/portal'&&method==='POST'){
  if(!user?.stripe_customer_id)return fail('Nessun abbonamento trovato',404);if(!env.STRIPE_SECRET_KEY)return fail('Pagamenti non configurati',503);const session=await stripe(ctx,'billing_portal/sessions','POST',{customer:user.stripe_customer_id,return_url:url.origin+'/'});return json({url:session.url});
 }
 if(path==='admin/stats'&&method==='GET'){
- if(user?.role!=='admin')return fail('Accesso amministratore richiesto',403);
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
  const [users,quotes,subs,sources,prices]=await Promise.all(['users','quotes','subscriptions','price_sources','price_items'].map(t=>env.DB.prepare('SELECT COUNT(*) AS n FROM '+t).first()));return json({users:users.n,quotes:quotes.n,subscriptions:subs.n,sources:sources.n,prices:prices.n});
 }
 if(path==='admin/prices/import'&&method==='POST'){
- if(user?.role!=='admin')return fail('Accesso amministratore richiesto',403);const b=await body(ctx);if(!b?.source||!Array.isArray(b.items)||b.items.length>100||!b.items.length)return fail('Formato non valido o massimo 100 voci per richiesta');
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);const b=await body(ctx);if(!b?.source||!Array.isArray(b.items)||b.items.length>100||!b.items.length)return fail('Formato non valido o massimo 100 voci per richiesta');
  const s=b.source;if(!s.id||!s.title||!/^https:\/\//.test(s.url||'')||!s.publisher||!s.edition||!s.license||!s.verified_at)return fail('Metadati fonte obbligatori: id, titolo, URL HTTPS, editore, edizione, licenza, data verifica');
  const stmts=[env.DB.prepare('INSERT INTO price_sources(id,title,url,publisher,edition,license,verified_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,url=excluded.url,publisher=excluded.publisher,edition=excluded.edition,license=excluded.license,verified_at=excluded.verified_at').bind(s.id,s.title,s.url,s.publisher,s.edition,s.license,s.verified_at)];
  for(const i of b.items){if(!i.region||!i.category||!i.code||!i.description||!i.unit||!Number.isFinite(Number(i.amount))||Number(i.amount)<0)return fail('Voce prezzo non valida');stmts.push(env.DB.prepare('INSERT INTO price_items(id,source_id,region,province,city,category,code,description,unit,amount) VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(source_id,region,code,city) DO UPDATE SET amount=excluded.amount,description=excluded.description,unit=excluded.unit').bind(random(),s.id,i.region,i.province||null,i.city||null,i.category,i.code,i.description,i.unit,Number(i.amount)))}
