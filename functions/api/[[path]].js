@@ -32,7 +32,7 @@ if(path==='stripe/webhook'&&method==='POST'){
 if(method!=='GET'&&!sameOrigin(request))return fail('Origine non autorizzata',403);
 
 if(path==='site/config'&&method==='GET'){
- const r=await env.DB.prepare('SELECT key,value FROM site_settings WHERE key IN ('ads_enabled','ads_placement','ads_html','regional_factors','estimator_notice')').all();
+ const r=await env.DB.prepare("SELECT key,value FROM site_settings WHERE key IN ('ads_enabled','ads_placement','ads_html','regional_factors','estimator_notice')").all();
  const values=Object.fromEntries((r.results||[]).map(x=>[x.key,x.value]));
  return json({adsEnabled:values.ads_enabled==='true',adsPlacement:values.ads_placement||'inline',adsHtml:values.ads_html||'',regionalFactors:JSON.parse(values.regional_factors||'{}'),estimatorNotice:values.estimator_notice||''});
 }
