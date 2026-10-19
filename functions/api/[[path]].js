@@ -63,9 +63,38 @@ if(path==='admin/quotes'&&method==='GET'){
 }
 if(path==='admin/prices'&&method==='GET'){
  if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
- const r=await env.DB.prepare('SELECT id,region,category,code,description,unit,amount FROM price_items ORDER BY region,category LIMIT 200').all();return json({items:r.results||[]});
+ const r=await env.DB.prepare('SELECT id,source_id,region,province,city,category,code,description,unit,amount FROM price_items ORDER BY region,category,code LIMIT 1000').all();return json({items:r.results||[]});
 }
 
+// ADMIN: source, price and quote management. Every mutation is cookie-authenticated.
+if(path==='admin/sources'&&method==='GET'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const r=await env.DB.prepare('SELECT s.*, (SELECT COUNT(*) FROM price_items p WHERE p.source_id=s.id) price_count FROM price_sources s ORDER BY s.title LIMIT 500').all();return json({items:r.results||[]});
+}
+if(path==='admin/sources/toggle'&&method==='POST'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const b=await body(ctx);if(!b||typeof b.id!=='string'||!([true,false].includes(b.active)))return fail('Parametri non validi');
+ const r=await env.DB.prepare('UPDATE price_sources SET active=? WHERE id=?').bind(b.active?1:0,b.id).run();return json({ok:true,changed:r.meta?.changes||0});
+}
+if(path==='admin/prices/item'&&method==='POST'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const b=await body(ctx);if(!b||typeof b.id!=='string'||!b.id||typeof b.description!=='string'||!b.description.trim()||b.description.length>500||typeof b.unit!=='string'||!b.unit.trim()||b.unit.length>50||!Number.isFinite(Number(b.amount))||Number(b.amount)<0)return fail('Dati prezzo non validi');
+ const r=await env.DB.prepare('UPDATE price_items SET description=?,unit=?,amount=? WHERE id=?').bind(b.description.trim(),b.unit.trim(),Number(b.amount),b.id).run();return json({ok:true,changed:r.meta?.changes||0});
+}
+if(path==='admin/prices/item'&&method==='DELETE'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const b=await body(ctx);if(!b||typeof b.id!=='string'||!b.id)return fail('ID non valido');
+ const r=await env.DB.prepare('DELETE FROM price_items WHERE id=?').bind(b.id).run();return json({ok:true,changed:r.meta?.changes||0});
+}
+if(path==='admin/quotes/item'&&method==='DELETE'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ const b=await body(ctx);if(!b||typeof b.id!=='string'||!b.id)return fail('ID non valido');
+ const r=await env.DB.prepare('DELETE FROM quotes WHERE id=?').bind(b.id).run();return json({ok:true,changed:r.meta?.changes||0});
+}
+if(path==='admin/diagnostics'&&method==='GET'){
+ if(!await adminFromCookie(ctx))return fail('Accesso amministratore richiesto',403);
+ return json({database:true,adminSecret:!!env.ADMIN_PASSWORD,adsenseClient:!!env.ADSENSE_CLIENT_ID,adsenseSlot:!!env.ADSENSE_SLOT,stripeConfigured:!!(env.STRIPE_SECRET_KEY&&env.STRIPE_PRICE_ID),stripeWebhook:!!env.STRIPE_WEBHOOK_SECRET});
+}
 if(path==='admin/status'&&method==='GET')return json({configured:!!env.ADMIN_PASSWORD,authenticated:!!await adminFromCookie(ctx)});
 if(path==='config'&&method==='GET')return json({adsenseClient:env.ADSENSE_CLIENT_ID||'',adsenseSlot:env.ADSENSE_SLOT||'',paymentsEnabled:!!(env.STRIPE_SECRET_KEY&&env.STRIPE_PRICE_ID)});
 if(path==='admin/login'&&method==='POST'){
